@@ -110,6 +110,14 @@ local function factory(args)
         net_now.sent = string.format(format, net_now.sent)
         net_now.received = string.format(format, net_now.received)
 
+        if tonumber(net_now.sent) > 1000 or tonumber(net_now.received) > 1000 then
+            awesome.emit_signal("critical", "net")
+        elseif tonumber(net_now.sent) > 500 or tonumber(net_now.received) > 500 then
+           awesome.emit_signal("warning", "net")            
+        else
+            awesome.emit_signal("normal", "net")            
+        end
+
         widget = net.widget
         settings()
     end

@@ -97,6 +97,7 @@ local function factory(args)
                         free       = free / math.pow(1024, units)
                     }
 
+                
                     if fs_now[path].percentage > 0 then -- don't notify unused file systems
                         notifypaths[#notifypaths+1] = path
 
@@ -106,6 +107,14 @@ local function factory(args)
                     end
                 end
             end
+        end
+
+        if fs_now and fs_now[path] and tonumber(fs_now[path].percentage) >= 95 then
+            awesome.emit_signal("critical", "fs")
+        elseif fs_now and fs_now[path] and tonumber(fs_now[path].percentage) >= 90 then
+           awesome.emit_signal("warning", "fs")            
+        else
+            awesome.emit_signal("normal", "fs")            
         end
 
         widget = fs.widget

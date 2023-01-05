@@ -62,6 +62,15 @@ local function factory(args)
 
         cpu_now = cpu.core
         cpu_now.usage = cpu_now[0].usage
+
+        if tonumber(cpu_now.usage) > 90 then
+            awesome.emit_signal("critical", "cpu")
+        elseif tonumber(cpu_now.usage) > 50 then
+           awesome.emit_signal("warning", "cpu")            
+        else
+            awesome.emit_signal("normal", "cpu")            
+        end
+        
         widget = cpu.widget
 
         settings()

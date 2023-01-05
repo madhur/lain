@@ -39,6 +39,14 @@ local function factory(args)
         mem_now.swapused = mem_now.swap - mem_now.swapf
         mem_now.perc = math.floor(mem_now.used / mem_now.total * 100)
 
+        if tonumber(mem_now.perc) > 80 then
+            awesome.emit_signal("critical", "mem")
+        elseif tonumber(mem_now.perc) > 50 then
+           awesome.emit_signal("warning", "mem")            
+        else
+            awesome.emit_signal("normal", "mem")            
+        end
+
         widget = mem.widget
         settings()
     end
