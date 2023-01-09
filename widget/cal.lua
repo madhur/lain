@@ -173,10 +173,10 @@ local function factory(args)
     function cal.next() cal.move( 1) end
 
     function cal.attach(widget)
-        widget:connect_signal("mouse::enter", cal.hover_on)
+        --widget:connect_signal("mouse::enter", cal.hover_on)
         widget:connect_signal("mouse::leave", cal.hide)
         widget:buttons(awful.util.table.join(
-                    awful.button({}, 1, cal.prev),
+                    awful.button({}, 1, cal.hover_on),
                     awful.button({}, 3, cal.next),
                     awful.button({}, 2, cal.hover_on),
                     awful.button({}, 5, cal.prev),

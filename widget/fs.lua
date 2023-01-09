@@ -13,6 +13,8 @@ local focused    = require("awful.screen").focused
 local wibox      = require("wibox")
 local naughty    = require("naughty")
 local gears      = require("gears")
+local madhur     = require("madhur")
+local awful      = require("awful")
 local math       = math
 local string     = string
 local tconcat    = table.concat
@@ -54,7 +56,7 @@ local function factory(args)
         end)
     end
 
-    local timeout   = args.timeout or 600
+    local timeout   = args.timeout or 60
     local partition = args.partition
     local threshold = args.threshold or 99
     local showpopup = args.showpopup or "on"
@@ -108,10 +110,12 @@ local function factory(args)
                 end
             end
         end
-
+        local path = "/"
+        --madhur.helpers.debug("processed fs loop")
         if fs_now and fs_now[path] and tonumber(fs_now[path].percentage) >= 95 then
             awesome.emit_signal("critical", "fs")
         elseif fs_now and fs_now[path] and tonumber(fs_now[path].percentage) >= 90 then
+           --madhur.helpers.debug("emitting fs warning")
            awesome.emit_signal("warning", "fs")            
         else
             awesome.emit_signal("normal", "fs")            
@@ -153,8 +157,13 @@ local function factory(args)
     end
 
     if showpopup == "on" then
-       fs.widget:connect_signal('mouse::enter', function () fs.show(0) end)
+       --fs.widget:connect_signal('mouse::enter', function () fs.show(0) end)
        fs.widget:connect_signal('mouse::leave', function () fs.hide() end)
+       fs.widget:buttons(gears.table.join(
+        awful.button({}, 1, function()
+            fs.show(0)
+        end
+    )))
     end
 
     helpers.newtimer(partition or "fs", timeout, fs.update)
