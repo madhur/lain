@@ -20,6 +20,8 @@ local function factory(args)
     local cpu      = { core = {}, widget = args.widget or wibox.widget.textbox() }
     local timeout  = args.timeout or 2
     local settings = args.settings or function() end
+    local warn_count = 0
+    local crit_count = 0
 
     function cpu.update()
         -- Read the amount of time the CPUs have spent performing
@@ -60,14 +62,37 @@ local function factory(args)
             end
         end
 
+         -- Read the frequency at which the CPUs are operating
+        -- This info is found in /proc/cpuinfo
+        -- local freq_sum = 0
+        -- local cpu_count = 0
+        -- for coreid,line in pairs(helpers.lines_match("cpu MHz", "/proc/cpuinfo")) do
+        --     local frequency = tonumber(string.match(line, "%d+%.%d+"))
+        --     cpu.core[coreid].frequency = frequency
+        --     freq_sum = freq_sum + frequency
+        --     cpu_count = cpu_count + 1
+        -- end
+        -- cpu.core[0].frequency = freq_sum / cpu_count  -- coreid 0 is for average
+
+
+
         cpu_now = cpu.core
         cpu_now.usage = cpu_now[0].usage
+        -- cpu_now.frequency = cpu_now[0].frequency
 
         if tonumber(cpu_now.usage) > 90 then
-            awesome.emit_signal("critical", "cpu")
+            crit_count = crit_count + 1
+            if crit_count > 3 then
+                awesome.emit_signal("critical", "cpu")
+            end
         elseif tonumber(cpu_now.usage) > 50 then
-           awesome.emit_signal("warning", "cpu")            
+            warn_count = warn_count + 1
+            if warn_count > 3 then
+                awesome.emit_signal("warning", "cpu")            
+            end
         else
+            warn_count = 0
+            crit_count = 0
             awesome.emit_signal("normal", "cpu")            
         end
         

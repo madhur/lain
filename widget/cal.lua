@@ -159,7 +159,8 @@ local function factory(args)
             screen  = cal.followtag and awful.screen.focused() or scr or 1,
             icon    = cal.icon,
             timeout = type(seconds) == "number" and seconds or cal.notification_preset.timeout or 5,
-            text    = text
+            text    = text,
+            position = "top_middle"
         }
     end
 

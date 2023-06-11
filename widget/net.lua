@@ -26,7 +26,8 @@ local function factory(args)
     local screen     = args.screen or 1
     local format     = args.format or "%.1f"
     local settings   = args.settings or function() end
-
+    local warn_count = 0
+    local crit_count = 0
     -- Compatibility with old API where iface was a string corresponding to 1 interface
     net.iface = (args.iface and (type(args.iface) == "string" and {args.iface}) or
                 (type(args.iface) == "table" and args.iface)) or {}
@@ -111,11 +112,19 @@ local function factory(args)
         net_now.received = string.format(format, net_now.received)
 
         if tonumber(net_now.sent) > 1000 or tonumber(net_now.received) > 1000 then
-            awesome.emit_signal("critical", "net")
+            crit_count = crit_count + 1
+            if crit_count > 3 then
+                awesome.emit_signal("critical", "net")
+            end
         elseif tonumber(net_now.sent) > 500 or tonumber(net_now.received) > 500 then
-           awesome.emit_signal("warning", "net")            
+            warn_count = warn_count + 1
+            if warn_count > 3 then
+                awesome.emit_signal("warning", "net")
+            end
         else
-            awesome.emit_signal("normal", "net")            
+            warn_count = 0
+            crit_count = 0
+            awesome.emit_signal("normal", "net")
         end
 
         widget = net.widget
