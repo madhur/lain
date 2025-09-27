@@ -9,6 +9,7 @@
 
 local helpers    = require("lain.helpers")
 local Gio        = require("lgi").Gio
+local GioUnix    = require("lgi").GioUnix
 local focused    = require("awful.screen").focused
 local wibox      = require("wibox")
 local naughty    = require("naughty")
@@ -76,8 +77,8 @@ local function factory(args)
         fs_now = {}
 
         local notifypaths = {}
-        for _, mount in ipairs(Gio.unix_mounts_get()) do
-            local path = Gio.unix_mount_get_mount_path(mount)
+        for _, mount in ipairs(GioUnix.mounts_get()) do
+            local path = GioUnix.mount_get_mount_path(mount)
             local root = Gio.File.new_for_path(path)
             local info = root:query_filesystem_info(query)
 
