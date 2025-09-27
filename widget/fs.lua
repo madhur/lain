@@ -77,8 +77,19 @@ local function factory(args)
         fs_now = {}
 
         local notifypaths = {}
-        for _, mount in ipairs(GioUnix.mounts_get()) do
-            local path = GioUnix.mount_get_mount_path(mount)
+        
+        local mounts_get
+        local mount_get_mount_path
+        pcall(function()
+            mounts_get = GioUnix.mounts_get
+            mount_get_mount_path = GioUnix.mount_get_mount_path
+        end)
+        if not mounts_get then
+            mounts_get = Gio.unix_mounts_get
+            mount_get_mount_path = Gio.unix_mount_get_mount_path
+        end
+        for _, mount in ipairs(mounts_get()) do
+            local path = mount_get_mount_path(mount)
             local root = Gio.File.new_for_path(path)
             local info = root:query_filesystem_info(query)
 
